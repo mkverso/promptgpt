@@ -1,29 +1,36 @@
+import { lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { Login } from './Login';
-import { Chat } from './Chat';
+import { ProtectedRoute } from '../../components/ProtectedRoute';
+import { PageLoading } from '../../components/PageLoading';
+
+const Chat = lazy(() => import('./Chat').then(m => ({ default: m.Chat })));
 
 /**
  * AppRoutes
  * 
- * Central routing configuration for the application.
- * 
- * METHODOLOGY:
- * - Uses `BrowserRouter` for clean URLs (history API).
- * - Defines `Routes` and individual `Route` definitions.
- * - `/` -> Renders Login page.
- * - `/chat` -> Renders Chat page.
- * - `*` (Catch-all) -> Redirects back to `/` to handle unknown paths.
- * 
- * WHY:
- * - Centralized route definition makes it easy to manage app structure.
- * - `Navigate` ensures users don't get stuck on 404s.
+ * Central routing configuration for the application with protected access control.
  */
 export function AppRoutes() {
     return (
         <BrowserRouter>
             <Routes>
+                {/* Public Route */}
                 <Route path="/" element={<Login />} />
-                <Route path="/chat" element={<Chat />} />
+
+                {/* Protected Route */}
+                <Route
+                    path="/chat"
+                    element={
+                        <ProtectedRoute>
+                            <Suspense fallback={<PageLoading message="Loading Chat..." />}>
+                                <Chat />
+                            </Suspense>
+                        </ProtectedRoute>
+                    }
+                />
+
+                {/* Catch-all Redirect */}
                 <Route path="*" element={<Navigate to="/" replace />} />
             </Routes>
         </BrowserRouter>

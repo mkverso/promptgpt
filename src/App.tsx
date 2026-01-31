@@ -8,14 +8,17 @@
 
 import { AppRoutes } from './app/routes';
 import { ThemeProvider } from './theme/ThemeProvider';
+import { AuthProvider } from './app/AuthProvider';
 import { ErrorBoundary } from './components/ErrorBoundary';
 
 function App() {
   return (
     <ErrorBoundary>
-      <ThemeProvider>
-        <AppRoutes />
-      </ThemeProvider>
+      <AuthProvider>
+        <ThemeProvider>
+          <AppRoutes />
+        </ThemeProvider>
+      </AuthProvider>
     </ErrorBoundary>
   );
 }

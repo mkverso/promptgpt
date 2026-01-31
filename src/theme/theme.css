@@ -30,6 +30,12 @@
     --border-color: #ddd;
     --input-bg: rgba(255, 255, 255, 0.8);
 
+    /* Message Bubbles */
+    --msg-user-bg: var(--pk-color-3);
+    --msg-user-text: var(--text-primary);
+    --msg-ai-bg: var(--input-bg);
+    --msg-ai-text: var(--text-primary);
+
     --font-main: 'JetBrains Mono', monospace;
 }
 
@@ -45,6 +51,12 @@
     /* Darker Greenish */
     --border-color: #444;
     --input-bg: rgba(0, 0, 0, 0.2);
+
+    /* Message Bubbles */
+    --msg-user-bg: var(--pk-color-6);
+    --msg-user-text: #ffffff;
+    --msg-ai-bg: var(--input-bg);
+    --msg-ai-text: var(--text-primary);
 }
 
 /* Global resets using variables */

@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 import { LoginForm } from '../../components/LoginForm';
 import { ThemeToggle } from '../../components/ThemeToggle';
+import { PageLoading } from '../../components/PageLoading';
 
 /**
  * Login Page
@@ -31,58 +32,23 @@ export function Login() {
     };
 
     if (isLoading) {
-        return (
-            <div style={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                justifyContent: 'center',
-                height: '100vh',
-                gap: '1rem',
-                animation: 'fadeIn 0.5s ease'
-            }}>
-                <style>{`
-                    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-                    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-                `}</style>
-                <img
-                    src="/favicon.png"
-                    alt="Logo"
-                    style={{
-                        width: '80px',
-                        height: '80px',
-                        borderRadius: '50%',
-                        animation: 'spin 2s linear infinite' // Spin the logo
-                    }}
-                />
-                <h2 style={{ color: 'var(--text-secondary)', fontWeight: 'normal' }}>Entering LiteGPT...</h2>
-            </div>
-        );
+        return <PageLoading />;
     }
 
     return (
-        <div style={{
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            height: '100vh',
-            gap: '2rem',
-            position: 'relative' // For absolute positioning of toggle
-        }}>
-            <ThemeToggle style={{ position: 'absolute', top: '1rem', right: '1rem' }} />
+        <div className="login-container">
+            <ThemeToggle className="theme-toggle-login" />
             <img
                 src="/favicon.png"
                 alt="Logo"
-                style={{
-                    width: '64px',
-                    height: '64px',
-                    borderRadius: '50%',
-                    boxShadow: '0 4px 10px rgba(0,0,0,0.1)'
-                }}
+                className="login-logo"
             />
             <h1>LiteGPT Web</h1>
             <LoginForm onSuccess={handleLoginSuccess} />
+
+            <div className="login-credit-wrapper">
+                Built by <span className="credit-name"><a href="https://murali-k-portfolio.vercel.app/">Murali</a></span>
+            </div>
         </div>
     );
 }

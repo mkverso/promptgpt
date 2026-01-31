@@ -113,66 +113,24 @@ export const ChatInput = memo(function ChatInput({ onSend, disabled }: ChatInput
     const removeImage = () => setSelectedImage(null);
 
     return (
-        <div style={{
-            padding: '1rem 0.75rem 1.5rem',
-            backgroundColor: 'transparent',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            gap: '0.75rem'
-        }}>
+        <div className="chat-input-wrapper">
             {/* Image Preview Container */}
             {selectedImage && (
-                <div style={{
-                    alignSelf: 'flex-start',
-                    marginLeft: '10%',
-                    position: 'relative',
-                    borderRadius: '12px',
-                    overflow: 'hidden',
-                    border: '1px solid var(--border-color)',
-                    boxShadow: '0 4px 12px rgba(0,0,0,0.2)'
-                }}>
+                <div className="image-preview-box">
                     <img
                         src={selectedImage}
                         alt="Selected"
-                        style={{ maxWidth: '120px', maxHeight: '120px', display: 'block' }}
+                        className="preview-img"
                     />
                     <button
                         onClick={removeImage}
-                        style={{
-                            position: 'absolute',
-                            top: '4px',
-                            right: '4px',
-                            background: 'rgba(0,0,0,0.7)',
-                            color: 'white',
-                            border: 'none',
-                            borderRadius: '50%',
-                            width: '24px',
-                            height: '24px',
-                            cursor: 'pointer',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            fontSize: '14px'
-                        }}
+                        className="btn-remove-img"
                     >✕</button>
                 </div>
             )}
 
             {/* Main Pill Input Area */}
-            <div style={{
-                width: '100%',
-                maxWidth: '800px',
-                position: 'relative',
-                display: 'flex',
-                alignItems: 'flex-end',
-                backgroundColor: 'var(--input-bg)',
-                borderRadius: '26px',
-                padding: '8px 12px',
-                border: '1px solid var(--border-color)',
-                transition: 'border-color 0.2s',
-                boxShadow: '0 2px 6px rgba(0,0,0,0.05)'
-            }}>
+            <div className="pill-input-container">
                 {/* Hidden File Inputs */}
                 <input
                     type="file"
@@ -195,16 +153,9 @@ export const ChatInput = memo(function ChatInput({ onSend, disabled }: ChatInput
                     <button
                         onClick={() => setShowImageMenu(!showImageMenu)}
                         disabled={disabled}
+                        className="btn-plus-options"
                         style={{
-                            background: 'transparent',
-                            border: 'none',
-                            color: 'var(--text-secondary)',
                             cursor: disabled ? 'not-allowed' : 'pointer',
-                            padding: '10px',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            transition: 'color 0.2s'
                         }}
                         title="Image options"
                     >
@@ -213,38 +164,10 @@ export const ChatInput = memo(function ChatInput({ onSend, disabled }: ChatInput
 
                     {/* Options Menu */}
                     {showImageMenu && (
-                        <div style={{
-                            position: 'absolute',
-                            bottom: '100%',
-                            left: '0',
-                            marginBottom: '10px',
-                            backgroundColor: 'var(--bg-primary)',
-                            border: '1px solid var(--border-color)',
-                            borderRadius: '12px',
-                            boxShadow: '0 8px 24px rgba(0,0,0,0.2)',
-                            padding: '6px',
-                            display: 'flex',
-                            flexDirection: 'column',
-                            gap: '4px',
-                            zIndex: 100,
-                            minWidth: '160px'
-                        }}>
+                        <div className="image-options-menu">
                             <button
                                 onClick={() => cameraInputRef.current?.click()}
-                                style={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '10px',
-                                    padding: '10px 12px',
-                                    background: 'transparent',
-                                    border: 'none',
-                                    borderRadius: '8px',
-                                    color: 'var(--text-primary)',
-                                    cursor: 'pointer',
-                                    textAlign: 'left',
-                                    fontSize: '0.9rem',
-                                    transition: 'background 0.2s'
-                                }}
+                                className="menu-item-btn"
                                 onMouseEnter={(e) => e.currentTarget.style.background = 'var(--input-bg)'}
                                 onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
                             >
@@ -252,20 +175,7 @@ export const ChatInput = memo(function ChatInput({ onSend, disabled }: ChatInput
                             </button>
                             <button
                                 onClick={() => galleryInputRef.current?.click()}
-                                style={{
-                                    display: 'flex',
-                                    alignItems: 'center',
-                                    gap: '10px',
-                                    padding: '10px 12px',
-                                    background: 'transparent',
-                                    border: 'none',
-                                    borderRadius: '8px',
-                                    color: 'var(--text-primary)',
-                                    cursor: 'pointer',
-                                    textAlign: 'left',
-                                    fontSize: '0.9rem',
-                                    transition: 'background 0.2s'
-                                }}
+                                className="menu-item-btn"
                                 onMouseEnter={(e) => e.currentTarget.style.background = 'var(--input-bg)'}
                                 onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
                             >
@@ -283,23 +193,7 @@ export const ChatInput = memo(function ChatInput({ onSend, disabled }: ChatInput
                     placeholder={disabled ? "AI is thinking..." : "Message LiteGPT..."}
                     disabled={disabled}
                     rows={1}
-                    style={{
-                        flex: 1,
-                        background: 'transparent',
-                        border: 'none',
-                        color: 'var(--text-primary)',
-                        fontSize: '1rem',
-                        fontFamily: 'inherit',
-                        padding: '10px 4px',
-                        outline: 'none',
-                        resize: 'none',
-                        maxHeight: '200px',
-                        lineHeight: '24px',
-                        height: '24px',
-                        minHeight: '24px',
-                        overflowY: 'hidden',
-                        boxSizing: 'content-box'
-                    }}
+                    className="chat-textarea"
                     onInput={(e) => {
                         const target = e.target as HTMLTextAreaElement;
                         target.style.height = '24px';
@@ -313,20 +207,11 @@ export const ChatInput = memo(function ChatInput({ onSend, disabled }: ChatInput
                 <button
                     onClick={() => handleSubmit()}
                     disabled={disabled || !hasInput}
+                    className="btn-send-msg"
                     style={{
-                        width: '36px',
-                        height: '36px',
-                        borderRadius: '50%',
-                        border: 'none',
                         backgroundColor: (disabled || !hasInput) ? 'var(--border-color)' : 'var(--text-primary)',
                         color: (disabled || !hasInput) ? 'var(--text-secondary)' : '#000',
                         cursor: (disabled || !hasInput) ? 'not-allowed' : 'pointer',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        marginLeft: '8px',
-                        marginBottom: '4px',
-                        transition: 'all 0.2s'
                     }}
                 >
                     <ArrowUpIcon color={(disabled || !hasInput) ? 'var(--text-secondary)' : '#000'} />
@@ -334,14 +219,10 @@ export const ChatInput = memo(function ChatInput({ onSend, disabled }: ChatInput
             </div>
 
             {/* Disclaimer Footer Note */}
-            <div style={{
-                fontSize: '0.75rem',
-                color: 'var(--text-secondary)',
-                textAlign: 'center',
-                opacity: 0.8
-            }}>
+            <div className="disclaimer-text">
                 LiteGPT can make mistakes.
             </div>
         </div>
     );
-});
+}
+);

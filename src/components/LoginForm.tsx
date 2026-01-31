@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { useAuth } from '../app/AuthProvider';
+import { verifyCredentials } from '../utils/security';
 
 interface LoginFormProps {
     onSuccess: () => void;
@@ -9,9 +11,12 @@ interface LoginFormProps {
  * 
  * Implements strict validation rules and improved UX:
  * - Validation: Username (min 4, alphanumeric), Password (min 6, not empty).
+ * - Security: Credentials are verified using an obfuscated combined hash.
  * - UX: Errors show only after interaction (touched). Button disabled until valid.
  */
 export function LoginForm({ onSuccess }: LoginFormProps) {
+    const { login } = useAuth();
+
     // Field State
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
@@ -21,13 +26,13 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
 
     // Error State
     const [errors, setErrors] = useState({ username: '', password: '', form: '' });
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     // Validation Logic
     const validate = () => {
         const newErrors = { username: '', password: '', form: '' };
         let isValid = true;
 
-        // Username Rule: Min 4 chars, Alphanumeric
         const usernameRegex = /^[a-zA-Z0-9]+$/;
         if (!username) {
             newErrors.username = 'Username is required';
@@ -40,7 +45,6 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
             isValid = false;
         }
 
-        // Password Rule: Not Empty, Min 6 chars
         if (!password) {
             newErrors.password = 'Password is required';
             isValid = false;
@@ -52,7 +56,6 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
         return { isValid, newErrors };
     };
 
-    // Update errors on change
     useEffect(() => {
         const { newErrors } = validate();
         setErrors(prev => ({ ...prev, username: newErrors.username, password: newErrors.password }));
@@ -64,21 +67,35 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
         setTouched(prev => ({ ...prev, [field]: true }));
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        if (!isValid) return;
+        if (!isValid || isSubmitting) return;
 
-        if (username === "user" && password === "user123") {
-            onSuccess();
-        } else {
-            setErrors(prev => ({ ...prev, form: "Invalid credentials" }));
+        setIsSubmitting(true);
+        setErrors(prev => ({ ...prev, form: '' }));
+
+        try {
+            // Verify using security utility
+            const isAuthorized = await verifyCredentials(username, password);
+
+            if (isAuthorized) {
+                login(); // Update auth context
+                onSuccess();
+            } else {
+                setErrors(prev => ({ ...prev, form: "Invalid credentials" }));
+            }
+        } catch (error) {
+            console.error("Login handling error:", error);
+            setErrors(prev => ({ ...prev, form: "An error occurred during login" }));
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
     return (
-        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', width: '100%', maxWidth: '300px' }}>
+        <form onSubmit={handleSubmit} className="login-form-wrap">
             {/* Username Field */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+            <div className="form-field-group">
                 <label htmlFor="username">Username</label>
                 <input
                     id="username"
@@ -86,19 +103,20 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
                     onBlur={() => handleBlur('username')}
+                    disabled={isSubmitting}
+                    autoComplete="username"
+                    className="login-input"
                     style={{
-                        padding: '0.5rem',
-                        fontFamily: 'inherit',
                         borderColor: touched.username && errors.username ? '#ff6b6b' : 'inherit'
                     }}
                 />
                 {touched.username && errors.username && (
-                    <span style={{ color: '#ff6b6b', fontSize: '0.8rem' }}>{errors.username}</span>
+                    <span className="error-text">{errors.username}</span>
                 )}
             </div>
 
             {/* Password Field */}
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+            <div className="form-field-group">
                 <label htmlFor="password">Password</label>
                 <input
                     id="password"
@@ -106,20 +124,21 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     onBlur={() => handleBlur('password')}
+                    disabled={isSubmitting}
+                    autoComplete="current-password"
+                    className="login-input"
                     style={{
-                        padding: '0.5rem',
-                        fontFamily: 'inherit',
                         borderColor: touched.password && errors.password ? '#ff6b6b' : 'inherit'
                     }}
                 />
                 {touched.password && errors.password && (
-                    <span style={{ color: '#ff6b6b', fontSize: '0.8rem' }}>{errors.password}</span>
+                    <span className="error-text">{errors.password}</span>
                 )}
             </div>
 
             {/* Global Form Error */}
             {errors.form && (
-                <div style={{ color: '#ff6b6b', fontSize: '0.9rem', textAlign: 'center' }}>
+                <div className="form-error-summary">
                     {errors.form}
                 </div>
             )}
@@ -127,21 +146,10 @@ export function LoginForm({ onSuccess }: LoginFormProps) {
             {/* Submit Button */}
             <button
                 type="submit"
-                disabled={!isValid}
-                style={{
-                    padding: '0.75rem',
-                    cursor: isValid ? 'pointer' : 'not-allowed',
-                    fontFamily: 'inherit',
-                    // Theme color integration
-                    backgroundColor: isValid ? 'var(--accent-primary)' : 'var(--input-bg)',
-                    color: isValid ? 'var(--pk-bg-light)' : 'var(--text-secondary)',
-                    border: isValid ? 'none' : '1px solid var(--border-color)',
-                    fontWeight: 'bold',
-                    borderRadius: '4px',
-                    opacity: isValid ? 1 : 0.7
-                }}
+                disabled={!isValid || isSubmitting}
+                className="login-submit-btn"
             >
-                Login
+                {isSubmitting ? 'Verifying...' : 'Login'}
             </button>
         </form>
     );
